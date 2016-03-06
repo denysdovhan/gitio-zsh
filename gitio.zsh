@@ -22,7 +22,7 @@ function gitio() {
   }
 
   # Show help message for -h and --help flags
-  if [[ $1 == "-h" || $1 == "--help" ]]; then
+  if [[ "$#" -eq 0 || "$1" == "-h" || "$1" == "--help" ]]; then
     gitio-help
     return 0
   fi
