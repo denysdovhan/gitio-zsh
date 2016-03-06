@@ -4,6 +4,8 @@
 
 > A zsh plugin for generating a GitHub short URL using [git.io](https://git.io).
 
+Inspired by [tiny](https://github.com/fishery/tiny) utility by [Jorge Bucaran](https://github.com/bucaran).
+
 ## Install
 
 ### For antigen users
