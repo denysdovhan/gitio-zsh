@@ -1,17 +1,18 @@
 #!/usr/bin/env zsh
-#
+
+
 # SYNOPSIS
 #   gitio <[https://github.com/]username/repo> [vanity code]
 #
 # DESCRIPTION
-#   Generate a GitHub short URL.
+#   A zsh plugin for generating a GitHub short URL.
 #
 # LINKS
 #   github.com/blog/985-git-io-github-url-shortener
-
-
+#   github.com/fishery/tiny
 function gitio() {
 
+  # Show help message with colors
   function gitio-help() {
     printf "USAGE: gitio <[%s]%s/%s> [%s] \n" \
       "https://github.com/" \
@@ -20,17 +21,20 @@ function gitio() {
       "${fg[green]}vanity code${reset_color}" \
   }
 
+  # Show help message for -h and --help flags
   if [[ $1 == "-h" || $1 == "--help" ]]; then
     gitio-help
     return 0
   fi
 
-  if test "${1#*http}" == $1; then
+  # Check if URL contains http(s)
+  if [[ ! "$1" =~ ^(http|https)://github.com/ ]]; then
     local URL="https://github.com/$1"
   else
     local URL="$1"
   fi
 
+  # Check if code is valid
   if [[ -n "$2" ]]; then
     local CODE="$(echo "$2" | tr "[:upper:]" "[:lower:]")"
 
@@ -40,35 +44,40 @@ function gitio() {
     fi
   fi
 
+  # Make request to git.io
   if [[ -n "$URL" && -n "$CODE" ]]; then
-    local GITIO_URL=$(
+    local GITIO_URL="$(
       curl --include --silent https://git.io/ \
            --form url="$URL" \
            --form code="$CODE" \
-    )
+    )"
   elif [[ -n "$URL" ]]; then
-    local GITIO_URL=$(
+    local GITIO_URL="$(
       curl --include --silent https://git.io/ \
            --form url="$URL" \
-    )
+    )"
   else
     gitio-help
     return 1
   fi
 
-  GITIO_URL=$(
+  # Get shorten URL from response
+  GITIO_URL="$(
     echo "$GITIO_URL" \
     | grep "Location: http" \
     | cut -c11- \
     | awk '{print substr($0, 1, length($0) - 1)}' \
-  )
+  )"
 
-  case $(uname) in
+  # Copy to clipboard if possible
+  case "$(uname)" in
     ("Darwin") echo "$GITIO_URL" | pbcopy ;;
     ("Linux")  echo "$GITIO_URL" | xclip -selection c ;;
   esac
 
+  # Print shorten URL to terminal
   echo "${fg[cyan]}$GITIO_URL${reset_color}"
 
+  # Open in browser if possible
   open "$GITIO_URL"
 }
