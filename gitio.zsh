@@ -38,7 +38,7 @@ function gitio() {
   if [[ -n "$2" ]]; then
     local CODE="$(echo "$2" | tr "[:upper:]" "[:lower:]")"
 
-    if [[ ! "$CODE" =~ ^[0-9a-z]+$ ]]; then
+    if [[ ! "$CODE" =~ ^[0-9a-z\-]+$ ]]; then
       printf "Error: %s code is invalid." "${fg_bold[red]}$2${reset_color}"
       return 1
     fi
