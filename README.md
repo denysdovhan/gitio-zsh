@@ -39,6 +39,14 @@ source $HOME/zsh-extensions/gitio-zsh/gitio.plugin.zsh
 
 ## Usage
 
+In git repo:
+
+```zsh
+gitio
+```
+
+In other directory:
+
 ```zsh
 gitio <[https://github.com/]username/repo> [cool-url]
 ```
