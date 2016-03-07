@@ -2,7 +2,7 @@
 
 
 # SYNOPSIS
-#   gitio <[https://github.com/]username/repo> [vanity code]
+#   gitio [[https://github.com/]username/repo] [vanity code]
 #
 # DESCRIPTION
 #   A zsh plugin for generating a GitHub short URL.
@@ -14,21 +14,35 @@ function gitio() {
 
   # Show help message with colors
   function gitio-help() {
-    printf "USAGE: gitio <[%s]%s/%s> [%s] \n" \
+    printf "USAGE: gitio [[%s]%s/%s] [%s] \n" \
       "https://github.com/" \
       "${fg[cyan]}username${reset_color}" \
       "${fg[magenta]}repo${reset_color}" \
       "${fg[green]}vanity code${reset_color}" \
   }
 
+  # Get URL from git config
+  if [[ "$#" -eq 0 && -s ".git/config" ]]; then
+    local CONFIG_URL="$(
+      awk '/url =/ {
+        sub(/^.+github\.com\//, "", $3)
+        sub(/\.git$/, "", $3)
+        print $3
+        exit
+      }' .git/config
+    )"
+  fi
+
   # Show help message for -h and --help flags
-  if [[ "$#" -eq 0 || "$1" == "-h" || "$1" == "--help" ]]; then
+  if [[ "$#" -eq 0 && -z "$CONFIG_URL" || "$1" == "-h" || "$1" == "--help" ]]; then
     gitio-help
     return 0
   fi
 
   # Check if URL contains http(s)
-  if [[ ! "$1" =~ ^(http|https)://github.com/ ]]; then
+  if [[ -n "$CONFIG_URL" ]]; then
+    local URL="https://github.com/$CONFIG_URL"
+  elif [[ ! "$1" =~ ^(http|https)://github.com/ ]]; then
     local URL="https://github.com/$1"
   else
     local URL="$1"
