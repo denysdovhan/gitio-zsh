@@ -25,7 +25,7 @@ function gitio() {
   if [[ "$#" -eq 0 && -s ".git/config" ]]; then
     local CONFIG_URL="$(
       awk '/url =/ {
-        sub(/^.+github\.com\//, "", $3)
+        sub(/^.+github\.com[\/:]/, "", $3)
         sub(/\.git$/, "", $3)
         print $3
         exit
